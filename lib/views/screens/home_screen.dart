@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hamyon/controllers/wallet_controller.dart';
 import 'package:hamyon/datacourse/local_datacourse.dart';
 import 'package:hamyon/views/widgets/manage_wallet_dialog.dart';
+import 'package:hamyon/views/widgets/search_view_delegate.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -146,8 +147,25 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).primaryColor,
       ),
       appBar: AppBar(
-        title: Text(_monthName(_currentDate.month)),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(_monthName(_currentDate.month)),
+
+            IconButton(
+              onPressed: () async {
+                await showSearch(
+                  context: context,
+                  delegate: SearchViewDelegate(_walletController.wallets),
+                );
+              },
+              icon: Icon(Icons.search),
+            ),
+          ],
+        ),
         centerTitle: true,
+
         leading: IconButton(
           onPressed: () {
             print(DateTime.now());
