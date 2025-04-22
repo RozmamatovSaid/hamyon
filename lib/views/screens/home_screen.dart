@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:hamyon/controllers/wallet_controller.dart';
 import 'package:hamyon/datacourse/local_datacourse.dart';
@@ -161,6 +162,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
               icon: Icon(Icons.search),
+            ),
+            IconButton(
+              onPressed: () async {
+                final theme = AdaptiveTheme.of(context);
+                final mode = await AdaptiveTheme.getThemeMode();
+                if (mode == AdaptiveThemeMode.dark) {
+                  theme.setLight();
+                  print("Light mode ga otdi");
+                } else {
+                  theme.setDark();
+                  print("Dark mode otdi");
+                }
+                setState(() {});
+              },
+              icon: Icon(Icons.dark_mode),
             ),
           ],
         ),
