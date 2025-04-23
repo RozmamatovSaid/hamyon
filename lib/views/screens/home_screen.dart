@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  final List<String> _localeTranslations = ["uz", "ru", "en"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -208,7 +209,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Stack(
         children: [
-          // Umumiy Xarajatlar
           Align(
             alignment: Alignment.topCenter,
             child: Padding(
@@ -232,14 +232,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Balans bo'limi
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
               height: 600,
               decoration: const BoxDecoration(
-                color: Colors.blue,
+                color: Colors.grey,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
@@ -273,7 +272,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.edit, size: 16),
+                                const Icon(
+                                  Icons.edit,
+                                  size: 16,
+                                  color: Colors.black,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   "${NumberFormat("#,###").format(double.parse(_balance))} so`m",
@@ -325,14 +328,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // Amaliyotlar ro'yxati
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
               width: double.infinity,
               height: 450,
               decoration: const BoxDecoration(
-                color: Colors.orange,
+                color: Colors.black45,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),

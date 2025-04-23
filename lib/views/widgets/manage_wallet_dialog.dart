@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hamyon/controllers/wallet_controller.dart';
 import 'package:hamyon/models/wallet_model.dart';
-import 'package:intl/intl.dart'; // Sana formatini chiroyli ko'rsatish uchun
+import 'package:intl/intl.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ManageWalletDialog extends StatefulWidget {
   final WalletModel? eskiWallet;
@@ -49,7 +50,6 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
 
     if (date != null) {
       final TimeOfDay? time = await showTimePicker(
-        // ignore: use_build_context_synchronously
         context: context,
         initialTime: TimeOfDay.fromDateTime(_selectedDate ?? DateTime.now()),
       );
@@ -96,18 +96,14 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
           );
           await walletController.editWallet(updatedWallet);
         }
-        if (mounted) {
-          Navigator.pop(context, true);
-        }
-      }
-    } catch (e, s) {
-      print(e);
-      print(s);
 
+        if (mounted) Navigator.pop(context, true);
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Xatolik yuz berdi: $e"),
+            content: Text(tr("error_occurred").replaceFirst("{}", "$e")),
             backgroundColor: Colors.red,
           ),
         );
@@ -130,10 +126,26 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        widget.eskiWallet == null
-            ? "Xarajat qo`shish"
-            : "Xarajatni o`zgartirish",
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            widget.eskiWallet == null ? tr("add_expense") : tr("edit_expense"),
+          ),
+          DropdownButton<Locale>(
+            value: context.locale,
+            icon: Icon(Icons.language),
+            underline: SizedBox(),
+            onChanged: (Locale? newLocale) {
+              if (newLocale != null) context.setLocale(newLocale);
+            },
+            items: [
+              DropdownMenuItem(value: Locale('uz'), child: Text('UZ')),
+              DropdownMenuItem(value: Locale('ru'), child: Text('RU')),
+              DropdownMenuItem(value: Locale('en'), child: Text('EN')),
+            ],
+          ),
+        ],
       ),
       content: Form(
         key: _formKey,
@@ -144,20 +156,15 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: "Xarajat nomi",
+                  labelText: tr("expense_name"),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Iltimos xarajat nomini kiriting";
-                  }
-
-                  if (value.length < 6) {
-                    return "Iltimos batajsil xarajatni kiriting";
-                  }
-
+                  if (value == null || value.isEmpty)
+                    return tr("enter_expense_name");
+                  if (value.length < 6) return tr("enter_expense_name_detail");
                   return null;
                 },
               ),
@@ -166,25 +173,20 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
                 controller: _amountController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
-                  labelText: "Xarajat miqdori",
+                  labelText: tr("expense_amount"),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Iltimos xarajat miqdorini kiriting";
-                  }
-
+                  if (value == null || value.isEmpty)
+                    return tr("enter_expense_amount");
                   try {
                     final amount = double.parse(value);
-                    if (amount <= 0) {
-                      return "Miqdor noldan katta bo'lishi kerak";
-                    }
-                  } catch (e) {
-                    return "Iltimos to'g'ri raqam kiriting";
+                    if (amount <= 0) return tr("amount_must_be_positive");
+                  } catch (_) {
+                    return tr("enter_valid_number");
                   }
-
                   return null;
                 },
               ),
@@ -194,16 +196,15 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
                 onTap: showCalendar,
                 controller: _dateController,
                 decoration: InputDecoration(
-                  labelText: "Xarajat kuni",
+                  labelText: tr("expense_date"),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Iltimos xarajat kunini tanlang";
-                  }
+                  if (value == null || value.isEmpty)
+                    return tr("select_expense_date");
                   return null;
                 },
               ),
@@ -214,11 +215,8 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
       ),
       actions: [
         TextButton(
-          onPressed:
-              _isLoading
-                  ? null // Yuklash paytida o'chirilgan
-                  : () => Navigator.pop(context),
-          child: Text("Bekor Qilish"),
+          onPressed: _isLoading ? null : () => Navigator.pop(context),
+          child: Text(tr("cancel")),
         ),
         FilledButton(
           onPressed: _isLoading ? null : save,
@@ -232,7 +230,7 @@ class _ManageWalletDialogState extends State<ManageWalletDialog> {
                       strokeWidth: 2,
                     ),
                   )
-                  : Text("Saqlash"),
+                  : Text(tr("save")),
         ),
       ],
     );
